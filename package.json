@@ -17,7 +17,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-push": "yarn lint && yarn test && yarn build",
+            "pre-push": "yarn lint && yarn build",
             "pre-commit": "lint-staged",
             "commit-msg": "commit-linter --message=COMMIT_MESSAGE"
         }
