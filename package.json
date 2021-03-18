@@ -1,0 +1,49 @@
+{
+    "name": "db-migrator",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "author": "Anton Kalashnikov <tohasan@yandex.ru>",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "lint": "yarn lint:code . && yarn lint:markdown",
+        "build": "ncc build src/index.ts -m -o dist",
+        "start": "node dist/index.js",
+        "docker:build": "docker build --tag akaeigenspace/db-migrator .",
+        "docker:run": "docker run -p 4010:4010 --name db-migrator -d akaeigenspace/db-migrator",
+        "docker:db": "docker run -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres --name db -d postgres:11.11-alpine",
+        "lint:code": "eslint --ext .js,.ts --fix",
+        "lint:markdown": "node ./node_modules/@eigenspace/codestyle/scripts/markdown-lint.js"
+    },
+    "husky": {
+        "hooks": {
+            "pre-push": "yarn lint && yarn test && yarn build",
+            "pre-commit": "lint-staged",
+            "commit-msg": "commit-linter --message=COMMIT_MESSAGE"
+        }
+    },
+    "lint-staged": {
+        "*.{ts,tsx}": [
+            "yarn lint",
+            "git add"
+        ]
+    },
+    "dependencies": {
+        "express": "4.17.1",
+        "express-fileupload": "1.2.1"
+    },
+    "devDependencies": {
+        "@eigenspace/codestyle": "3.0.4",
+        "@eigenspace/commit-linter": "latest",
+        "@types/express": "4.17.11",
+        "@types/express-fileupload": "1.1.6",
+        "@types/node": "14.14.35",
+        "@vercel/ncc": "0.27.0",
+        "eslint": "7.9.0",
+        "eslint-plugin-eigenspace-script": "0.1.4",
+        "husky": "2.3.0",
+        "lint-staged": "8.1.7",
+        "ts-node": "8.6.2",
+        "typescript": "3.8.2"
+    }
+}

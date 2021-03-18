@@ -1,0 +1,8 @@
+{
+    "name": "example-service",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "author": "Anton Kalashnikov <tohasan@yandex.ru>",
+    "license": "MIT",
+    "private": true
+}
