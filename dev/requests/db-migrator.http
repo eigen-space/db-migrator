@@ -1,7 +1,7 @@
 ###
 
 // Positive case: Send an archive with a changelog
-POST http://localhost:4010/migrate
+POST http://localhost:4010/migrate/{{service}}/{{database}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -12,22 +12,16 @@ Content-Disposition: form-data; name="changelog"; filename="changelog.tar"
 ###
 
 // Negative case: Try to send several files
-POST http://localhost:4010/migrate
+POST http://localhost:4010/migrate/{{service}}/{{database}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="first"; filename="input.txt"
+Content-Disposition: form-data; name="changelog"; filename="changelog.tar"
 
-// The 'input.txt' file will be uploaded
-< ./input.txt
+< ./data/changelog.tar
 
 --boundary
-Content-Disposition: form-data; name="second"; filename="input-second.txt"
+Content-Disposition: form-data; name="master"; filename="master.xml"
 
-// A temporary 'input-second.txt' file with the 'Text' content will be created and uploaded
+// 'master.xml' file with the 'Text' content will be created and uploaded
 Text
---boundary
-Content-Disposition: form-data; name="third";
-
-// The 'input.txt' file contents will be sent as plain text.
-< ./input.txt --boundary--
