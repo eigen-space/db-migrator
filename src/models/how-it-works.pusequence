@@ -1,0 +1,21 @@
+@startuml
+
+autonumber
+
+participant "<<service>>\nA service" as service
+participant "<<service>>\nDbMigrator" as migrator
+participant "<<jar>>\nLiquibase" as liquibase
+participant "<<database>>\nStorage" as storage
+
+service -> storage : Check Storage is availabe
+service -> storage : Create database
+service -> migrator : Migrate database change sets
+migrator -> liquibase : Call migration
+service <-- migrator : Migration result
+alt success
+    service -> service : Start listening requests
+else error
+    service -> service : Stop the service
+end
+
+@enduml

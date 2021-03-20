@@ -1,0 +1,34 @@
+@startuml
+
+[A service] <<service>> as service
+[DbMigratorClient] <<library>> as migratorClient
+[DbMigrator] <<service>> as migrator
+[Liquibase] <<jar>> as liquibase
+[Storage] <<database>> as storage
+
+interface "/migrate" as migrationApi
+interface "JDBC" as jdbc
+interface "Native \nDB driver" as nativedb
+
+migrationApi - migrator
+jdbc - storage
+nativedb - storage
+
+note left of service
+    A service which is going
+    to migrate database change
+    sets
+end note
+
+service -right-> nativedb: [1]
+service -right-> migrationApi: [2]
+service .down.> migratorClient: <<dependency>>
+migrator .down.> liquibase: [3] <<dependency>>
+migrator -right-> jdbc: [4]
+
+note left of nativedb
+    1. Check storage is up and running
+    2. Create database
+end note
+
+@enduml
