@@ -2,37 +2,45 @@ version: '3'
 
 services:
 
-  service:
-    build:
-      context: dev/example-service
-      dockerfile: Dockerfile
-    tty: true
+  db-migrator-client:
+    image: akaeigenspace/db-migrator-client-example:1.0.0
+    container_name: db-migrator-client
+    hostname: db-migrator-client
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: example_service_db
+      MIGRATOR_BASE_URL: "http://${MIGRATOR_HOST}:${MIGRATOR_PORT}"
     depends_on:
       - db-migrator
-      - storage
+      - db-migrator-storage
 
   db-migrator:
-    image: akaeigenspace/db-migrator
+    image: akaeigenspace/db-migrator:1.0.0
+    container_name: ${MIGRATOR_HOST}
+    hostname: ${MIGRATOR_HOST}
     ports:
       - 4010:4010
     environment:
-      DB_HOST: storage
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
       CHANGELOG_FILENAME: master.xml
 
-  storage:
+  db-migrator-storage:
     image: postgres:11.11-alpine
-    container_name: storage
-    hostname: storage
+    container_name: ${DB_HOST}
+    hostname: ${DB_HOST}
     ports:
       - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data/
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
 volumes:
   postgres-data:

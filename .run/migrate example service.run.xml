@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="migrate example service" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" path="$PROJECT_DIR$/dev/requests/db-migrator.http" runType="Run single request">
+    <method v="2" />
+  </configuration>
+</component>

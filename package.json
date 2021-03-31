@@ -1,6 +1,7 @@
 {
     "name": "db-migrator",
     "version": "1.0.0",
+    "description": "This is a service that helps to use [Liquibase](https://www.liquibase.org/)\nas a service that other services can use for database migration on running.",
     "main": "dist/index.js",
     "author": "Anton Kalashnikov <tohasan@yandex.ru>",
     "license": "MIT",
@@ -9,7 +10,7 @@
         "lint": "yarn lint:code . && yarn lint:markdown",
         "build": "ncc build src/index.ts -m -o dist",
         "start": "node dist/index.js",
-        "docker:build": "docker build --tag akaeigenspace/db-migrator .",
+        "docker:build": "docker build --tag akaeigenspace/db-migrator:1.0.0 .",
         "docker:run": "docker run -p 4010:4010 --name db-migrator -d akaeigenspace/db-migrator",
         "docker:db": "docker run -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres --name db -d postgres:11.11-alpine",
         "lint:code": "eslint --ext .js,.ts --fix",

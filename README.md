@@ -6,15 +6,29 @@ as a service that other services can use for database migration on running.
 It is based on the official [Liquibase Docker Image] and adds a small nodejs
 service to handle http requests for db migration.
 
+# Getting started
+
+If you want to start an example of db migration, you need to use
+docker compose:
+
+```
+    docker-compose --env-file docker-compose.env up -d
+```
+
+If you want to replace only a single container, you should follow the steps:
+
+1. `docker-compose stop <container name>`
+2. `docker-compose --env-file=docker-compose.env up -d --no-deps <container name>`
+
 # How it works
 
-**[Component Model](./src/models/component-model.puml)**
+**[Component Model](dev/models/component-model.puml)**
 
-![Component Model](./src/models/component-model.png)
+![Component Model](dev/models/component-model.png)
 
-**[Sequence Diagram](src/models/how-it-works.pusequence)**
+**[Sequence Diagram](dev/models/how-it-works.pusequence)**
 
-![Sequence Diagram](src/models/how-it-works.png)
+![Sequence Diagram](dev/models/how-it-works.png)
 
 # How to use
 

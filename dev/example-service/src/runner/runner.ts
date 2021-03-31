@@ -1,4 +1,3 @@
-/* eslint-disable */
 export class Runner {
 
     constructor() {
@@ -6,6 +5,7 @@ export class Runner {
     }
 
     run(): void {
+        // eslint-disable-next-line no-console
         console.log('do some job...');
         setTimeout(this.run, 2000);
     }

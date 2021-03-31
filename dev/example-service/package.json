@@ -5,11 +5,17 @@
     "author": "Anton Kalashnikov <tohasan@yandex.ru>",
     "license": "MIT",
     "private": true,
+    "scripts": {
+        "docker:build": "docker build --tag akaeigenspace/db-migrator-client-example:1.0.0 .",
+        "build": "ncc build src/index.ts -m -o dist"
+    },
     "dependencies": {
+        "@eigenspace/db-migrator-client": "1.0.9",
         "form-data": "4.0.0",
         "pg": "8.5.1"
     },
     "devDependencies": {
+        "@eigenspace/codestyle": "3.0.4",
         "@types/node": "14.14.35",
         "@types/pg": "7.14.7",
         "@vercel/ncc": "0.27.0",

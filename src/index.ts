@@ -1,11 +1,13 @@
 /* eslint-disable */
 import { exec as execOrigin } from 'child_process';
-import express from 'express';
+import express, { Response } from 'express';
 import fileUpload from 'express-fileupload';
 import { env } from './env/env';
 import util from 'util';
+import { RequestValidator } from './request-validator/request-validator';
 
 const exec = util.promisify(execOrigin);
+const requestValidator = new RequestValidator();
 
 const app = express();
 
@@ -17,39 +19,22 @@ app.get('/heartbeat', (_, res) => {
 
 app.post('/migrate/:service/:database', async (req, res) => {
     console.log('/migrate', 'params:', req.params);
-    const { service, database } = req.params;
+    const { params, files } = req;
 
-    if (!service) {
-        return res.status(400)
-            .send({ message: 'You should specify the name of service which is going to migrate db.' });
-    }
-
-    if (!database) {
-        return res.status(400)
-            .send({ message: 'You should specify the database name you want to migrate.' });
-    }
-
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400)
-            .send({ message: 'No files were uploaded.' });
-    }
-
-    if (1 < Object.keys(req.files).length) {
-        return res.status(400)
-            .send({
-                message: 'You should send only one file. ' +
-                    'It should be an archive of the directory with change sets.'
-            });
+    try {
+        requestValidator.validate({ params, files });
+    } catch (e) {
+        return sendResponse(res, 400, e);
     }
 
     try {
-        const file = req.files.changelog as fileUpload.UploadedFile;
+        const { service, database } = params;
+        const file = req.files!.changelog as fileUpload.UploadedFile;
         await file.mv(`${env.uploadDirectory}/${service}/${file.name}`);
         await migrate(service, database);
         res.send({ message: 'Migration is successfully completed!' });
-    } catch (err) {
-        return res.status(500)
-            .send(err);
+    } catch (e) {
+        sendResponse(res, 500, e);
     }
 });
 
@@ -67,4 +52,10 @@ async function executeCommand(command: string): Promise<void> {
     const { stdout, stderr } = await exec(command);
     console.log('exec, stdout:', stdout);
     console.log('exec, stderr:', stderr);
+}
+
+function sendResponse(res: Response, code: number, error: Error): Response {
+    console.error('response', `code: ${code}, error:`, error);
+    return res.status(code)
+        .send(error);
 }
