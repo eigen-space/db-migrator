@@ -9,12 +9,6 @@ WORKDIR /opt/service/
 # that contains db change sets
 RUN apk add tar
 
-# Create an archive with db changes
-COPY db-migration/changesets changesets
-RUN cd changesets \
-    && tar -cvf changelog.tar . \
-    && cd ..
-
 # Install dependencies we need to build the app
 
 COPY .yarnrc .
@@ -22,6 +16,12 @@ COPY package.json .
 COPY yarn.lock .
 
 RUN yarn
+
+# Create an archive with db changes
+COPY db-migration/changesets changesets
+RUN cd changesets \
+    && tar -cvf changelog.tar . \
+    && cd ..
 
 # Build the service
 # As a result we get the ready-to-run nodejs file: /opt/service/dist/index.js
@@ -41,9 +41,6 @@ WORKDIR /opt/service/
 # Copy from the build stage
 COPY --from=STAGE_BUILD /opt/service/changesets/changelog.tar ./changelog.tar
 COPY --from=STAGE_BUILD /opt/service/dist .
-
-ENV SERVICE_NAME 'example-service'
-ENV CHANGELOG_ARCHIVE_PATH '/opt/service/changelog.tar'
 
 # Run the service
 ENTRYPOINT ["node", "index.js"]

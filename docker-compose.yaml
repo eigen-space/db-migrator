@@ -12,6 +12,7 @@ services:
       DB_USERNAME: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: example_service_db
+      SERVICE_NAME: 'example-service'
       MIGRATOR_BASE_URL: "http://${MIGRATOR_HOST}:${MIGRATOR_PORT}"
     depends_on:
       - db-migrator
@@ -22,7 +23,7 @@ services:
     container_name: ${MIGRATOR_HOST}
     hostname: ${MIGRATOR_HOST}
     ports:
-      - 4010:4010
+      - ${MIGRATOR_PORT}:4010
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}

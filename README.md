@@ -51,8 +51,8 @@ The container starts the service on the port 4010 by default.
 
 A service that wants to migrate its database changes should use the following API:
 
-```
-  curl -X POST --location "http://localhost:4010/migrate" \
+```shell
+  curl -X POST --location "http://localhost:4010/migrate/:service/:database" \
     -H "Content-Type: multipart/form-data; boundary=boundary" \
     -F "changelog=@/path/to/changelog-archive/changelog.tar;filename=changelog.tar;type=*/*"
 ```
@@ -73,6 +73,73 @@ The migration service expects that:
    
 See [example-service](./dev/example-service) for an example how to create an appropriate
 docker image and request db migration.
+
+If you want to use db migration in a service, you need the following:
+
+1. Make a structure of the changelog as described above
+2. Add creating the changelog archive `changelog.tar` to the `Dockerfile`:
+    
+    ```dockerfile
+        # Create an archive with db changes
+        COPY db-migration/changesets changesets
+        RUN cd changesets \
+            && tar -cvf changelog.tar . \
+            && cd ..
+    ```
+   **Pay attention!** `changelog.tar` should not has a directory with change sets, 
+   it should contain them directly, i.e. plain list of files.
+
+3. Copy the archive from the build stage to the final image in the `Dockerfile`:
+
+    ```dockerfile
+        # Copy from the build stage
+        COPY --from=STAGE_BUILD /opt/service/changesets/changelog.tar ./changelog.tar
+    ```
+
+4. If you use docker compose, add the container with your service 
+   with a configuration (`environment` and `depends_on`) like that:
+   
+    ```yaml
+      db-migrator-client:
+        image: akaeigenspace/db-migrator-client-example:1.0.0
+        container_name: db-migrator-client
+        hostname: db-migrator-client
+        environment:
+          DB_HOST: ${DB_HOST}
+          DB_PORT: ${DB_PORT}
+          DB_USERNAME: ${DB_USER}
+          DB_PASSWORD: ${DB_PASSWORD}
+          DB_NAME: example_service_db
+          SERVICE_NAME: '<service name>'
+          MIGRATOR_BASE_URL: "http://${MIGRATOR_HOST}:${MIGRATOR_PORT}"
+        depends_on:
+          - db-migrator
+          - db-migrator-storage
+    ```
+
+5. Add npm dependency `@eigenspace/db-migrator-client` (version: 1.0.9+) to the `package.json`:
+
+    ```shell
+        yarn add @eigenspace/db-migrator-client@1.0.9
+    ```
+
+6. Use db migrator in your entry script:
+
+    ```typescript
+        async function main(): Promise<void> {
+            const migrator = new DbMigratorClient();
+            await migrator.migrate();
+            
+            // Your service starts here, right after migration
+            // ...
+        }
+    ```
+   
+7. Provide dependency for `postgres`:
+
+    ```shell
+        yarn add pg@8.5.1
+    ```
 
 # Why do we have that dependencies?
 

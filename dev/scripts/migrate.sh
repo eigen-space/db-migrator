@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# Environment variables
-DB_HOST=192.168.0.102
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=postgres
-CHANGELOG_FILENAME=master.xml
-
 # Parameters from a service
 serviceName=$1
 dbName=$2
