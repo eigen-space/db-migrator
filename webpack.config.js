@@ -1,4 +1,3 @@
-const { prepareBundledDescriptor } = require('./dev/scripts/prepare-bundled-descriptor');
 const path = require('path');
 const fs = require('fs');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -24,18 +23,13 @@ module.exports = {
         publicPath: '/',
         path: path.resolve(__dirname, 'dist'),
         library: libraryName,
-        libraryTarget: 'umd'
+        libraryTarget: 'commonjs2'
     },
-    optimization: { minimize: true },
     plugins: [
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin({
             patterns: [
-                {
-                    from: 'package.json',
-                    to: 'package.json',
-                    transform: content => prepareBundledDescriptor(content)
-                },
+                { from: 'package.json', to: 'package.json' },
                 { from: 'README.md', to: 'README.md' }
             ]
         })

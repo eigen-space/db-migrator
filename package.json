@@ -1,6 +1,6 @@
 {
     "name": "@eigenspace/db-migrator",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "It is a base package that allows to migrate SQL change sets for a database. It is a simple version of migration like the Liquibase does but only for NodeJs.",
     "author": "Anton Kalashnikov <tohasan@yandex.ru>",
     "contributors": [],
@@ -17,11 +17,14 @@
         "url": "https://github.com/eigenspace/db-migrator",
         "directory": "packages/db-migrator"
     },
+    "bugs": {
+        "url": "https://github.com/eigen-space/db-migrator/issues"
+    },
+    "homepage": "https://github.com/eigen-space/db-migrator#readme",
     "engines": {
         "node": ">=10.0.0"
     },
     "scripts": {
-        "prepack": "yarn build",
         "build": "webpack",
         "lint": "yarn lint:code && yarn lint:readme",
         "lint:code": "eslint --ext .js,.ts --fix",
