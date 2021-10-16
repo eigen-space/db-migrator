@@ -1,0 +1,6 @@
+out-tsc/**/*
+out/**/*
+dist/**/*
+tmp/**/*
+coverage/**/*
+.eslintrc.js

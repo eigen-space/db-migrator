@@ -1,0 +1,23 @@
+{
+    "extends": "@eigenspace/codestyle/configs/typescript/base.tsconfig",
+    "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "dist",
+        "declaration": true,
+        "typeRoots": [
+            "../../node_modules/@types",
+            "./node_modules/@types",
+            "./src/@types"
+        ],
+        "lib": [
+            "es2020"
+        ]
+    },
+    "include": [
+        "src"
+    ]
+}

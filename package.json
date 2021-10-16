@@ -1,0 +1,66 @@
+{
+    "name": "@eigenspace/db-migrator",
+    "version": "1.0.0",
+    "main": "src/index.ts",
+    "types": "src/index.ts",
+    "publishConfig": {
+        "access": "public",
+        "main": "dist/index.js",
+        "types": "dist/index.d.ts",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/eigenspace/db-migrator",
+        "directory": "packages/db-migrator"
+    },
+    "engines": {
+        "node": ">=10.0.0"
+    },
+    "scripts": {
+        "build": "webpack",
+        "lint": "yarn lint:code",
+        "lint:code": "eslint --ext .js,.ts --fix",
+        "lint:markdown": "node ./node_modules/@eigenspace/codestyle/scripts/markdown-lint.js",
+        "prepack": "yarn build"
+    },
+    "devDependencies": {
+        "@eigenspace/codestyle": "3.0.4",
+        "@eigenspace/commit-linter": "0.0.22-dev",
+        "@types/node": "16.10.1",
+        "clean-webpack-plugin": "2.0.2",
+        "copy-webpack-plugin": "9.0.1",
+        "eslint": "7.22.0",
+        "eslint-plugin-eigenspace-script": "0.1.4",
+        "husky": "4.3.8",
+        "lint-staged": "11.1.2",
+        "ts-loader": "9.2.4",
+        "ts-node": "10.2.1",
+        "typescript": "4.4.3",
+        "webpack": "5.54.0",
+        "webpack-cli": "4.8.0"
+    },
+    "husky": {
+        "hooks": {
+            "pre-push": "yarn lint && yarn build",
+            "pre-commit": "lint-staged",
+            "commit-msg": "commit-linter --message=COMMIT_MESSAGE"
+        }
+    },
+    "lint-staged": {
+        "*.{ts,tsx}": [
+            "yarn lint",
+            "git add"
+        ]
+    },
+    "license": "MIT",
+    "keywords": [
+        "migrator",
+        "migration",
+        "db",
+        "liquibase",
+        "sql",
+        "changelog",
+        "changeset"
+    ]
+}
