@@ -1,4 +1,4 @@
-const { prepareBundledDescriptor } = require('../../dev/scripts/prepare-bundled-descriptor');
+const { prepareBundledDescriptor } = require('./dev/scripts/prepare-bundled-descriptor');
 const path = require('path');
 const fs = require('fs');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
