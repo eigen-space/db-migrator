@@ -47,6 +47,11 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.5.tgz#9283c9ce5b289a3c4f61c12757469e59377f81f3"
   integrity sha512-6nFkfkmSeV/rqSaS4oWHgmpnYw194f6hmWF5is6b0J1naJZoiD0NTc9AiUwPHvWsowkjuHErCZT1wa0jg+BLIA==
 
+"@eigenspace/argument-parser@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@eigenspace/argument-parser/-/argument-parser-1.0.2.tgz#dbb21937d1b88795398ff7d1d26d0f8742a0999b"
+  integrity sha512-LgHE7X/6F8zTsPNt62CvJSxBo/grXKpX6+4A9iVihkLdIvFJ8KVP6vJ1ekZS6Quov6dEBB5aKSN5Z08yTaBafg==
+
 "@eigenspace/argument-parser@1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@eigenspace/argument-parser/-/argument-parser-1.0.4.tgz#9c51fc5bfca474c98841942ed8440864cd455323"
@@ -63,6 +68,19 @@
   integrity sha512-UpfIkwNEmpEqTVbzcRLq2ScDkz9N+OUGnavj0dmpv9s96vYq3M+XHLT0HrP+hGjc7nZnt53KBtufEj2zR/Td3w==
   dependencies:
     "@eigenspace/argument-parser" "1.0.4"
+
+"@eigenspace/logger@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@eigenspace/logger/-/logger-1.0.8.tgz#8fa721dd7c4069b58f084bc7be1d037a939a7a37"
+  integrity sha512-mLCMHE36jL38YGvJhEDyVLRSc7s3kE82BoGeBgc3W6/VcE6yYI8PYj62fCRe4C4zJCEJV+SkY6FkCBsJD0KUIg==
+
+"@eigenspace/package-publisher@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@eigenspace/package-publisher/-/package-publisher-0.0.3.tgz#d0d8d69c69214975e5f63cc7b061fefe9549efbc"
+  integrity sha512-Bs7hetK4FmWmqKphy/PF/jyGrBdC9R/Km8dpdwz47kXoRiVqMCd8HKPoo3H1cSYIazkPEhokQfeMZmhiyiw0qw==
+  dependencies:
+    "@eigenspace/argument-parser" "1.0.2"
+    "@eigenspace/logger" "1.0.8"
 
 "@eslint/eslintrc@^0.4.0":
   version "0.4.3"

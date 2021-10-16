@@ -1,6 +1,9 @@
 {
     "name": "@eigenspace/db-migrator",
     "version": "1.0.0",
+    "description": "It is a base package that allows to migrate SQL change sets for a database. It is a simple version of migration like the Liquibase does but only for NodeJs.",
+    "author": "Anton Kalashnikov <tohasan@yandex.ru>",
+    "contributors": [],
     "main": "src/index.ts",
     "types": "src/index.ts",
     "publishConfig": {
@@ -18,15 +21,17 @@
         "node": ">=10.0.0"
     },
     "scripts": {
+        "prepack": "yarn build",
         "build": "webpack",
-        "lint": "yarn lint:code",
+        "lint": "yarn lint:code && yarn lint:readme",
         "lint:code": "eslint --ext .js,.ts --fix",
-        "lint:markdown": "node ./node_modules/@eigenspace/codestyle/scripts/markdown-lint.js",
-        "prepack": "yarn build"
+        "lint:readme": "node ./node_modules/@eigenspace/codestyle/scripts/markdown-lint.js",
+        "deploy:publish": "node ./node_modules/@eigenspace/package-publisher/index.js"
     },
     "devDependencies": {
         "@eigenspace/codestyle": "3.0.4",
         "@eigenspace/commit-linter": "0.0.22-dev",
+        "@eigenspace/package-publisher": "0.0.3",
         "@types/node": "16.10.1",
         "clean-webpack-plugin": "2.0.2",
         "copy-webpack-plugin": "9.0.1",
