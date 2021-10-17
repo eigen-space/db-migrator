@@ -14,8 +14,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/eigenspace/db-migrator",
-        "directory": "packages/db-migrator"
+        "url": "https://github.com/eigen-space/db-migrator"
     },
     "bugs": {
         "url": "https://github.com/eigen-space/db-migrator/issues"
