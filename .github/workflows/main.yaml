@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NPM_REGISTRY_ACCESS_TOKEN: ${{secrets.NPM_REGISTRY_ACCESS_TOKEN}}
+      NPM_GITHUB_PACKAGES_ACCESS_TOKEN: ${{secrets.NPM_GITHUB_PACKAGES_ACCESS_TOKEN}}
 
     steps:
       - uses: actions/checkout@v2
