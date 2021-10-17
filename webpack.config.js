@@ -22,8 +22,10 @@ module.exports = {
         filename: 'index.js',
         publicPath: '/',
         path: path.resolve(__dirname, 'dist'),
-        library: libraryName,
-        libraryTarget: 'commonjs2'
+        library: {
+            name: libraryName,
+            type: 'umd'
+        }
     },
     plugins: [
         new CleanWebpackPlugin(),
