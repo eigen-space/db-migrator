@@ -10,7 +10,8 @@
         "access": "public",
         "main": "dist/index.js",
         "types": "dist/index.d.ts",
-        "registry": "https://npm.pkg.github.com/eigen-space/"
+        "registry": "https://npm.pkg.github.com/",
+        "scope": "@eigen-space"
     },
     "repository": {
         "type": "git",
