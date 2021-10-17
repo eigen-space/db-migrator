@@ -1,5 +1,5 @@
 {
-    "name": "@eigenspace/db-migrator",
+    "name": "@eigen-space/db-migrator",
     "version": "1.0.2",
     "description": "It is a base package that allows to migrate SQL change sets for a database. It is a simple version of migration like the Liquibase does but only for NodeJs.",
     "author": "Anton Kalashnikov <tohasan@yandex.ru>",
@@ -10,8 +10,7 @@
         "access": "public",
         "main": "dist/index.js",
         "types": "dist/index.d.ts",
-        "registry": "https://npm.pkg.github.com/",
-        "scope": "@eigen-space"
+        "registry": "https://npm.pkg.github.com/"
     },
     "repository": {
         "type": "git",
