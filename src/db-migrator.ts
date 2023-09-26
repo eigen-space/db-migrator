@@ -18,7 +18,7 @@ export class DbMigrator {
     private readonly config: MigrationConfig = DbMigrator.DEFAULT_CONFIG;
     private readonly changelog: ChangelogService;
 
-    protected constructor(config: MigrationConfig, db: DbClient) {
+    constructor(config: MigrationConfig, db: DbClient) {
         this.config = Object.assign(this.config, config);
         this.changelog = new ChangelogService(config, db);
     }
