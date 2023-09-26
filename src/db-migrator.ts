@@ -1,51 +1,38 @@
-import { MigrationConfig } from './types/migration-config';
-import { Migration } from './types/migration';
+import crypto from 'crypto';
 import { readFileSync } from 'fs';
 import { readdir } from 'fs/promises';
-import { DbClient } from './db-client/db-client';
-import { MigrationActionType } from './enums/migration-action-type.enum';
 import path from 'path';
-import crypto from 'crypto';
+import { ActionType } from './db-migrator.types';
+import type { DbClient, Migration, MigrationConfig } from './db-migrator.types';
+import { ChangelogService } from './services/changelog.service';
 
-export abstract class DbMigrator<MC extends MigrationConfig, C extends DbClient<MC>> {
+export class DbMigrator {
     private static DEFAULT_CONFIG: MigrationConfig = {
-        host: '',
-        port: 5432,
-        database: 'postgres',
-        user: 'postgres',
-        password: 'postgres',
         changelogTable: 'dbchangelog',
         validateChecksums: true,
         changeSetsDirectory: './db/changesets'
     };
-
     private static MIGRATION_SCRIPT_EXTENSIONS = ['.sql'];
-
     private static MAX_VERSION_NAMES = ['max', ''];
 
-    protected readonly config: MigrationConfig = DbMigrator.DEFAULT_CONFIG;
+    private readonly config: MigrationConfig = DbMigrator.DEFAULT_CONFIG;
+    private readonly changelog: ChangelogService;
 
-    protected constructor(
-        config: MigrationConfig,
-        protected readonly client: C
-    ) {
+    protected constructor(config: MigrationConfig, db: DbClient) {
         this.config = Object.assign(this.config, config);
+        this.changelog = new ChangelogService(config, db);
     }
 
     /**
      * Main method to move a schema to a particular version.
      * A target must be specified, otherwise nothing is run.
      *
-     * @returns {Promise}
-     * @param {String} version Version to migrate as string or number
+     * @param version Version to migrate as string or number
      *  (handled as  numbers internally)
      */
     async migrate(version: string = ''): Promise<Migration[]> {
-        const { client, config } = this;
-
         try {
-            await client.connect();
-            await client.createChangelogTableIfNotExist();
+            await this.changelog.init();
 
             const migrations = await this.getMigrations();
 
@@ -54,27 +41,19 @@ export abstract class DbMigrator<MC extends MigrationConfig, C extends DbClient<
                 targetVersion = await this.getMaxVersion(migrations);
             }
 
-            const databaseVersion = await this.client.getDbVersion();
-            if (config.validateChecksums && databaseVersion <= targetVersion) {
+            const databaseVersion = await this.changelog.getDbVersion();
+            if (this.config.validateChecksums && databaseVersion <= targetVersion) {
                 await this.validateMigrations(databaseVersion, migrations);
             }
 
             const runnableMigrations = await this.getRunnableMigrations(databaseVersion, targetVersion, migrations);
-            const appliedMigrations = await this.runMigrations(runnableMigrations);
-
-            // We do it in try and catch blocks because
-            // when we use it in the block `finally`
-            // it is accidentally called after a random await.
-            await client.disconnect();
-
-            return appliedMigrations;
+            return this.runMigrations(runnableMigrations);
         } catch (error) {
             // Decorate error with empty appliedMigrations if not yet exist
             // Rethrow error to module user
             if (!error.appliedMigrations) {
                 error.appliedMigrations = [];
             }
-            await client.disconnect();
 
             throw error;
         }
@@ -102,14 +81,16 @@ export abstract class DbMigrator<MC extends MigrationConfig, C extends DbClient<
                 const filename = path.join(changeSetsDirectory, file);
                 const fileContent = readFileSync(filename, 'utf8');
 
-                return {
+                const migration: Migration = {
                     version: Number(rawVersion),
-                    action,
+                    action: action as ActionType,
                     filename: file,
                     name,
                     md5: this.calculateChecksum(fileContent),
                     sql: fileContent
-                } as Migration;
+                };
+
+                return migration;
             });
 
         migrations = migrations.filter(migration => !isNaN(migration.version));
@@ -150,13 +131,13 @@ export abstract class DbMigrator<MC extends MigrationConfig, C extends DbClient<
      */
     private async validateMigrations(databaseVersion: number, migrations: Migration[]): Promise<void> {
         const migrationsToValidate = migrations.filter(migration => {
-            return migration.action === MigrationActionType.DO
+            return migration.action === ActionType.DO
                 && 0 < migration.version
                 && migration.version <= databaseVersion;
         });
 
         for (const migration of migrationsToValidate) {
-            const md5 = await this.client.getMd5(migration);
+            const md5 = await this.changelog.getMd5(migration);
             if (migration.md5 !== md5) {
                 throw new Error(`MD5 checksum failed for migration [${migration.version}]`);
             }
@@ -166,16 +147,15 @@ export abstract class DbMigrator<MC extends MigrationConfig, C extends DbClient<
     /**
      * Runs the migrations in the order to reach target version
      *
-     * @returns {Promise} - Array of migration objects to appled to database
-     * @param {Array} migrations - Array of migration objects to apply to database
+     * @param migrations Migration objects we want to apply to database
+     * @returns Applied migrations
      */
     private async runMigrations(migrations: Migration[] = []): Promise<Migration[]> {
         const appliedMigrations = [];
 
         try {
             for (const migration of migrations) {
-                await this.client.runQuery(migration.sql);
-                await this.client.persistAction(migration);
+                await this.changelog.apply(migration);
                 appliedMigrations.push(migration);
             }
         } catch (error) {
@@ -189,7 +169,7 @@ export abstract class DbMigrator<MC extends MigrationConfig, C extends DbClient<
 
     /**
      * Returns an array of relevant migrations
-     * based on the target and database version passed.
+     * based on the current and target versions passed.
      * returned array is sorted in the order it needs to be run
      */
     private async getRunnableMigrations(
@@ -201,14 +181,14 @@ export abstract class DbMigrator<MC extends MigrationConfig, C extends DbClient<
 
         if (databaseVersion <= targetVersion) {
             runnableMigrations = migrations.filter(migration => {
-                return migration.action === MigrationActionType.DO
+                return migration.action === ActionType.DO
                     && databaseVersion < migration.version
                     && migration.version <= targetVersion;
             });
             runnableMigrations.sort((a, b) => a.version - b.version);
         } else {
             runnableMigrations = migrations.filter(migration => {
-                return migration.action === MigrationActionType.UNDO
+                return migration.action === ActionType.UNDO
                     && migration.version <= databaseVersion
                     && targetVersion < migration.version;
             });
